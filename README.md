@@ -6,6 +6,19 @@ A small macOS menu-bar app that lets the brightness keys push a Liquid Retina XD
 - The HUD shows percent and estimated nits: 100% = 500 nits, 200% = peak (1600 nits by default, configurable to 1000/1200/1400).
 - Menu-bar slider (0–200%), peak brightness choice, Launch at Login.
 
+| 60% | 100% | 150% | 200% |
+|---|---|---|---|
+| ![60%](docs/hud-60.png) | ![100%](docs/hud-100.png) | ![150%](docs/hud-150.png) | ![200%](docs/hud-200.png) |
+
+## Install
+
+1. Download **NitBoost-1.0.0.dmg** from the [latest release](https://github.com/dodat1905/nitboost/releases/latest).
+2. Open it and drag **NitBoost** into **Applications**.
+3. Open NitBoost. The app is not notarized by Apple, so macOS blocks the first launch: open **System Settings → Privacy & Security** and click **Open Anyway**.
+   (Or run `xattr -dr com.apple.quarantine /Applications/NitBoost.app` once.)
+4. When asked, allow NitBoost in **System Settings → Privacy & Security → Accessibility**. The brightness keys need this.
+5. Quit other apps that handle the brightness keys (for example BetterDisplay).
+
 ## How it works
 
 1. A 1×1 pixel Metal window draws EDR content, which makes macOS raise the display's EDR headroom (3.2× on a 14"/16" MacBook Pro).
