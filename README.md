@@ -15,7 +15,7 @@ A small macOS menu-bar app that lets the brightness keys push a Liquid Retina XD
 
 ## Install
 
-1. Download **NitBoost-1.0.0.dmg** from the [latest release](https://github.com/dodat1905/nitboost/releases/latest).
+1. Download **NitBoost-1.0.1.dmg** from the [latest release](https://github.com/dodat1905/nitboost/releases/latest).
 2. Open it and drag **NitBoost** into **Applications**.
 3. Open NitBoost. The app is not notarized by Apple, so macOS blocks the first launch: open **System Settings → Privacy & Security** and click **Open Anyway**.
    (Or run `xattr -dr com.apple.quarantine /Applications/NitBoost.app` once.)
