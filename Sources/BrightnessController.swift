@@ -13,6 +13,7 @@ final class BrightnessController {
 
     private let trigger = EDROverlayWindow(kind: .headroomTrigger)
     private let overlay = EDROverlayWindow(kind: .multiplyFill)
+    private let powerSource = PowerSourceMonitor()
     private static let smoothing = 0.22
     private static let headroomRampSeconds = 1.5
 
@@ -20,8 +21,13 @@ final class BrightnessController {
     private var animator: Timer?
     private var appliedFactor = 1.0
     private var settleUntil = Date.distantPast
+    private(set) var isOnACPower = PowerSourceMonitor.isOnACPower
     private(set) var boostPercent = 0.0
     var onChange: (() -> Void)?
+
+    init() {
+        powerSource.onChange = { [weak self] in self?.powerSourceChanged() }
+    }
 
     var maxNits: Double {
         get {
@@ -49,6 +55,7 @@ final class BrightnessController {
     @discardableResult
     func step(_ key: MediaKeyTap.Key, fine: Bool) -> Double {
         guard let id = BuiltInDisplay.id else { return percent }
+        powerSourceChanged()
         let system = SystemBrightness.get(id) ?? 1
         let boostStep = fine ? Self.fineBoostStep : Self.boostStep
         let steps = fine ? Self.fineSdrSteps : Self.sdrSteps
@@ -80,6 +87,7 @@ final class BrightnessController {
 
     func setPercent(_ value: Double) {
         guard let id = BuiltInDisplay.id else { return }
+        powerSourceChanged()
         let clamped = min(Self.maxPercent, max(0, value))
         if clamped > 100 {
             SystemBrightness.set(id, 1)
@@ -147,6 +155,7 @@ final class BrightnessController {
     }
 
     private func tick() {
+        powerSourceChanged()
         guard let id = BuiltInDisplay.id, let screen = BuiltInDisplay.screen else {
             stop()
             onChange?()
@@ -168,5 +177,13 @@ final class BrightnessController {
         let target = nits(for: 100 + boostPercent) / Self.sdrNits
         let headroom = Double(BuiltInDisplay.screen?.maximumExtendedDynamicRangeColorComponentValue ?? 1)
         return min(target, max(1, headroom))
+    }
+
+    private func powerSourceChanged() {
+        let current = PowerSourceMonitor.isOnACPower
+        guard current != isOnACPower else { return }
+        isOnACPower = current
+        if !current { stop() }
+        onChange?()
     }
 }

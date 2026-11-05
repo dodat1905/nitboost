@@ -5,6 +5,9 @@ A small macOS menu-bar app that lets the brightness keys push a Liquid Retina XD
 - **F1 / F2** step brightness 0–100% like macOS (16 steps), then 100–200% in 10% steps. Hold **⌥⇧** for fine steps.
 - The HUD shows percent and estimated nits: 100% = 500 nits, 200% = peak (1600 nits by default, configurable to 1000/1200/1400).
 - Menu-bar slider (0–200%), peak brightness choice, Launch at Login.
+- Unplugging removes the boost immediately. Normal brightness stays under macOS control, up to 100% (500 estimated nits in NitBoost).
+- On battery, you can manually raise brightness to 200% with the slider or brightness keys. Battery updates preserve your manual choice.
+- Reconnecting power preserves the current brightness. It does not restore an earlier boost automatically.
 
 | 60% | 100% | 150% | 200% |
 |---|---|---|---|
@@ -45,6 +48,8 @@ Notes from testing on macOS 27:
 ./build.sh           # builds build.noindex/NitBoost.app
 ./build.sh install   # copies to /Applications and launches
 ```
+
+Run `zsh test.sh` to check manual boost and power transitions with simulated hardware.
 
 `build.sh` signs with a local code-signing identity named `XDRBoost Local Signing` when one exists (so the Accessibility grant survives rebuilds), otherwise ad-hoc. With ad-hoc signing you must re-grant Accessibility after each rebuild.
 

@@ -8,6 +8,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private lazy var keyTap = MediaKeyTap { [weak self] key, flags in self?.handle(key, flags: flags) }
     private var statusItem: NSStatusItem!
     private let headerItem = NSMenuItem()
+    private let powerItem = NSMenuItem(title: "On battery — boost is manual", action: nil, keyEquivalent: "")
     private let slider = NSSlider(value: 100, minValue: 0, maxValue: BrightnessController.maxPercent, target: nil, action: nil)
     private let accessibilityItem = NSMenuItem(title: "Grant Accessibility Access…", action: #selector(openAccessibilitySettings), keyEquivalent: "")
     private let peakMenu = NSMenu()
@@ -89,6 +90,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let sliderItem = NSMenuItem()
         sliderItem.view = sliderView
         menu.addItem(sliderItem)
+        powerItem.isEnabled = false
+        menu.addItem(powerItem)
         menu.addItem(.separator())
 
         for nits in BrightnessController.peakNitChoices {
@@ -122,6 +125,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let percent = controller.percent
         headerItem.title = "Built-in Display — \(Int(percent.rounded()))% • \(Int(controller.nits(for: percent).rounded())) nits"
         slider.doubleValue = percent
+        powerItem.isHidden = controller.isOnACPower
         for item in peakMenu.items {
             item.state = (item.representedObject as? Double) == controller.maxNits ? .on : .off
         }
