@@ -73,10 +73,11 @@ with tempfile.TemporaryDirectory(prefix="updater-test-", dir=ROOT / "build.noind
         "SUFeedURL": prefix + "appcast.xml",
         "SUEnableAutomaticChecks": False,
         "SUAutomaticallyUpdate": False,
+        "SUDefaultsDomain": "com.dodat.nitboost." + stage.name,
         "NSAppTransportSecurity": {"NSAllowsArbitraryLoads": True},
     })
     (host / "Contents/Info.plist").write_bytes(plistlib.dumps(host_info))
-    identities = run(["security", "find-identity", "-v", "-p", "codesigning"])
+    identities = run(["security", "find-identity", "-p", "codesigning"])
     identity = "XDRBoost Local Signing" if '"XDRBoost Local Signing"' in identities else "-"
     run(["codesign", "--force", "--sign", identity, str(host)])
     try:
@@ -96,5 +97,6 @@ with tempfile.TemporaryDirectory(prefix="updater-test-", dir=ROOT / "build.noind
         stop_app()
         server.shutdown()
         server.server_close()
+        subprocess.run(["defaults", "delete", host_info["SUDefaultsDomain"]], capture_output=True)
         if was_running:
             run(["open", "-n", "/Applications/NitBoost.app"])

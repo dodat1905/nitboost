@@ -6,6 +6,7 @@ A small macOS menu-bar app that lets the brightness keys push a Liquid Retina XD
 - The HUD shows percent and estimated nits: 100% = 500 nits, 200% = peak (1600 nits by default, configurable to 1000/1200/1400).
 - Menu-bar slider (0–200%), peak brightness choice, Launch at Login.
 - Automatic updates through Sparkle. Use **Check for Updates…** in the menu, or turn **Automatically Update** on or off.
+- When an update needs attention, the menu icon changes to a download arrow. The update menu item shows the available version.
 - Unplugging removes the boost immediately. Normal brightness stays under macOS control, up to 100% (500 estimated nits in NitBoost).
 - On battery, you can manually raise brightness to 200% with the slider or brightness keys. Battery updates preserve your manual choice.
 - Reconnecting power preserves the current brightness. It does not restore an earlier boost automatically.

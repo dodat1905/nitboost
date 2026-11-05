@@ -16,7 +16,7 @@ ditto "$SPARKLE/Sparkle.framework" "$APP/Contents/Frameworks/Sparkle.framework"
 cp "$SPARKLE/LICENSE" "$APP/Contents/Resources/Sparkle-LICENSE.txt"
 swiftc -O -swift-version 5 -target arm64-apple-macos13.0 -F "$SPARKLE" -framework Sparkle -Xlinker -rpath -Xlinker @executable_path/../Frameworks Sources/*.swift -o "$APP/Contents/MacOS/NitBoost"
 SIGNING_IDENTITY=-
-if security find-identity -v -p codesigning | grep -q '"XDRBoost Local Signing"'; then
+if security find-identity -p codesigning | grep -q '"XDRBoost Local Signing"'; then
   SIGNING_IDENTITY="XDRBoost Local Signing"
 fi
 FRAMEWORK="$APP/Contents/Frameworks/Sparkle.framework/Versions/B"

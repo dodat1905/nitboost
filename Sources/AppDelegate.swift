@@ -3,7 +3,7 @@ import ApplicationServices
 import ServiceManagement
 import Sparkle
 
-final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, SPUStandardUserDriverDelegate {
     private let controller = BrightnessController()
     private let hud = BrightnessHUD()
     private lazy var keyTap = MediaKeyTap { [weak self] key, flags in self?.handle(key, flags: flags) }
@@ -14,8 +14,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let accessibilityItem = NSMenuItem(title: "Grant Accessibility Access…", action: #selector(openAccessibilitySettings), keyEquivalent: "")
     private let peakMenu = NSMenu()
     private let loginItem = NSMenuItem(title: "Launch at Login", action: #selector(toggleLaunchAtLogin), keyEquivalent: "")
-    private let updaterController = SPUStandardUpdaterController(startingUpdater: false, updaterDelegate: nil, userDriverDelegate: nil)
+    private lazy var updaterController = SPUStandardUpdaterController(startingUpdater: false, updaterDelegate: nil, userDriverDelegate: self)
+    private let updateItem = NSMenuItem(title: "Check for Updates…", action: #selector(SPUStandardUpdaterController.checkForUpdates(_:)), keyEquivalent: "")
     private let automaticUpdatesItem = NSMenuItem(title: "Automatically Update", action: #selector(toggleAutomaticUpdates), keyEquivalent: "")
+    private var availableUpdate: String?
     private var permissionTimer: Timer?
     private var signalSources: [DispatchSourceSignal] = []
 
@@ -118,7 +120,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(loginItem)
         menu.addItem(.separator())
 
-        let updateItem = NSMenuItem(title: "Check for Updates…", action: #selector(SPUStandardUpdaterController.checkForUpdates(_:)), keyEquivalent: "")
         updateItem.target = updaterController
         menu.addItem(updateItem)
         automaticUpdatesItem.target = self
@@ -144,8 +145,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         loginItem.state = SMAppService.mainApp.status == .enabled ? .on : .off
         let updater = updaterController.updater
         automaticUpdatesItem.state = updater.automaticallyChecksForUpdates && updater.automaticallyDownloadsUpdates ? .on : .off
+        updateItem.title = availableUpdate.map { "Update to \($0)…" } ?? "Check for Updates…"
         statusItem.button?.image = NSImage(
-            systemSymbolName: controller.boostPercent > 0 ? "sun.max.circle.fill" : "sun.max.circle",
+            systemSymbolName: availableUpdate != nil ? "arrow.down.circle" : (controller.boostPercent > 0 ? "sun.max.circle.fill" : "sun.max.circle"),
             accessibilityDescription: "NitBoost"
         )
     }
@@ -193,5 +195,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         updater.automaticallyDownloadsUpdates = enabled
         updater.automaticallyChecksForUpdates = enabled
         refreshMenu()
+    }
+
+    var supportsGentleScheduledUpdateReminders: Bool { true }
+
+    func standardUserDriverWillHandleShowingUpdate(_ handleShowingUpdate: Bool, forUpdate update: SUAppcastItem, state: SPUUserUpdateState) {
+        availableUpdate = update.displayVersionString
+        refreshMenu()
+    }
+
+    func standardUserDriverWillFinishUpdateSession() {
+        availableUpdate = nil
+        refreshMenu()
+    }
+
+    func standardUserDriverWillShowModalAlert() {
+        NSApp.activate(ignoringOtherApps: true)
     }
 }

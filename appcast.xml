@@ -4,15 +4,15 @@
         <title>NitBoost</title>
         <item>
             <title>1.0.1</title>
-            <pubDate>Fri, 06 Nov 2026 01:22:46 +0700</pubDate>
-            <sparkle:version>3</sparkle:version>
+            <pubDate>Fri, 06 Nov 2026 01:28:47 +0700</pubDate>
+            <sparkle:version>4</sparkle:version>
             <sparkle:shortVersionString>1.0.1</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
             <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <enclosure url="https://github.com/dodat1905/nitboost/releases/download/v1.0.1/NitBoost-1.0.1.zip" length="1144704" type="application/octet-stream" sparkle:edSignature="eonuZKRfqkBYU2iMUh6Hgja+ZI/Ddv8lUwrdpZwo5DmRZX1Lbrc3aIUXs0CEEQHAzmle++X8ITyYiPY8jwgXAw=="/>
+            <enclosure url="https://github.com/dodat1905/nitboost/releases/download/v1.0.1/NitBoost-1.0.1.zip" length="1162489" type="application/octet-stream" sparkle:edSignature="f7nyBIE/uw/nHV+ALJuqq2pLsY1bG42fMhrUpEgEChc1L36qkR6RyfNFs8ciw1+V3mJgbYXSsJ+c9CupprDnAg=="/>
         </item>
     </channel>
 </rss><!-- sparkle-signatures:
-edSignature: P9E8Jn5lmSIkzwzPx5aXzNYIIosGgCqjZGmx2OLdx/Q6rfCOIF88ibkwzTKNGSSt8gdjZgiGpKRZLrqIOolTAg==
+edSignature: Bc8Thg3t4LWYvnEQ0tvFV4DitVgjvvcFsiRiuI+RwRAhSsfILd5rWqnx7YbZt+o4jlIFsnBlI7/IsbPpazH5Dg==
 length: 875
 -->
