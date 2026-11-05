@@ -1,6 +1,7 @@
 import AppKit
 import ApplicationServices
 import ServiceManagement
+import Sparkle
 
 final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let controller = BrightnessController()
@@ -13,6 +14,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let accessibilityItem = NSMenuItem(title: "Grant Accessibility Access…", action: #selector(openAccessibilitySettings), keyEquivalent: "")
     private let peakMenu = NSMenu()
     private let loginItem = NSMenuItem(title: "Launch at Login", action: #selector(toggleLaunchAtLogin), keyEquivalent: "")
+    private let updaterController = SPUStandardUpdaterController(startingUpdater: false, updaterDelegate: nil, userDriverDelegate: nil)
+    private let automaticUpdatesItem = NSMenuItem(title: "Automatically Update", action: #selector(toggleAutomaticUpdates), keyEquivalent: "")
     private var permissionTimer: Timer?
     private var signalSources: [DispatchSourceSignal] = []
 
@@ -22,6 +25,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         controller.onChange = { [weak self] in self?.refreshMenu() }
         installSignalHandlers()
         startKeyTap()
+        updaterController.startUpdater()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -114,6 +118,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(loginItem)
         menu.addItem(.separator())
 
+        let updateItem = NSMenuItem(title: "Check for Updates…", action: #selector(SPUStandardUpdaterController.checkForUpdates(_:)), keyEquivalent: "")
+        updateItem.target = updaterController
+        menu.addItem(updateItem)
+        automaticUpdatesItem.target = self
+        menu.addItem(automaticUpdatesItem)
+        menu.addItem(.separator())
+
         let quitItem = NSMenuItem(title: "Quit NitBoost", action: #selector(quit), keyEquivalent: "q")
         quitItem.target = self
         menu.addItem(quitItem)
@@ -131,6 +142,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         accessibilityItem.isHidden = keyTap.isRunning
         loginItem.state = SMAppService.mainApp.status == .enabled ? .on : .off
+        let updater = updaterController.updater
+        automaticUpdatesItem.state = updater.automaticallyChecksForUpdates && updater.automaticallyDownloadsUpdates ? .on : .off
         statusItem.button?.image = NSImage(
             systemSymbolName: controller.boostPercent > 0 ? "sun.max.circle.fill" : "sun.max.circle",
             accessibilityDescription: "NitBoost"
@@ -172,5 +185,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     @objc private func quit() {
         controller.stop()
         NSApp.terminate(nil)
+    }
+
+    @objc private func toggleAutomaticUpdates() {
+        let updater = updaterController.updater
+        let enabled = !(updater.automaticallyChecksForUpdates && updater.automaticallyDownloadsUpdates)
+        updater.automaticallyDownloadsUpdates = enabled
+        updater.automaticallyChecksForUpdates = enabled
+        refreshMenu()
     }
 }

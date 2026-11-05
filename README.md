@@ -5,6 +5,7 @@ A small macOS menu-bar app that lets the brightness keys push a Liquid Retina XD
 - **F1 / F2** step brightness 0–100% like macOS (16 steps), then 100–200% in 10% steps. Hold **⌥⇧** for fine steps.
 - The HUD shows percent and estimated nits: 100% = 500 nits, 200% = peak (1600 nits by default, configurable to 1000/1200/1400).
 - Menu-bar slider (0–200%), peak brightness choice, Launch at Login.
+- Automatic updates through Sparkle. Use **Check for Updates…** in the menu, or turn **Automatically Update** on or off.
 - Unplugging removes the boost immediately. Normal brightness stays under macOS control, up to 100% (500 estimated nits in NitBoost).
 - On battery, you can manually raise brightness to 200% with the slider or brightness keys. Battery updates preserve your manual choice.
 - Reconnecting power preserves the current brightness. It does not restore an earlier boost automatically.
@@ -54,3 +55,21 @@ Run `zsh test.sh` to check manual boost and power transitions with simulated har
 `build.sh` signs with a local code-signing identity named `XDRBoost Local Signing` when one exists (so the Accessibility grant survives rebuilds), otherwise ad-hoc. With ad-hoc signing you must re-grant Accessibility after each rebuild.
 
 Diagnostics: `~/Library/Logs/NitBoost.log`.
+
+## Release
+
+The build downloads Sparkle 2.10.1 and checks its SHA-256 digest. It includes Sparkle and its license in the app bundle.
+
+Run `./release.sh` to create the DMG, ZIP, and signed `appcast.xml`. The script reads the version from `Info.plist`.
+
+The private update key stays in macOS Keychain under the account `com.dodat.nitboost`. Only the public key belongs in `Info.plist`.
+
+Upload both archives to the matching GitHub release. Commit `appcast.xml` to `main` after the archives are available.
+
+Sparkle reads the feed from `https://raw.githubusercontent.com/dodat1905/nitboost/main/appcast.xml`. Update archives and the feed require valid EdDSA signatures.
+
+For each new release, increase `CFBundleVersion`. Run `zsh test.sh` and `python3 Tests/verify_updater.py` before you publish the feed.
+
+The update test stops NitBoost, updates a temporary app through a local server, and restores the installed app afterward.
+
+`release.sh` checks archive signatures with the public key. The check also confirms that a changed archive fails verification.
